@@ -1,58 +1,29 @@
 <template>
   <div class="login">
     <div class="login-con">
+      <h3>社区住户后台管理系统</h3>
       <ul class="menu-tab">
-        <li
-          v-for="v in MenuData"
-          :class="{ current: v.current }"
-          :key="v.type"
-          @click="clickMenu(v)"
-        >
+        <li v-for="v in MenuData" :class="{ current: v.current }" :key="v.type" @click="clickMenu(v)">
           {{ v.txt }}
         </li>
       </ul>
-      <el-form
-        ref="ruleFormRef"
-        :model="ruleForm"
-        status-icon
-        :rules="rules"
-        class="demo-ruleForm"
-      >
+      <el-form ref="ruleFormRef" :model="ruleForm" status-icon :rules="rules" class="demo-ruleForm">
         <el-form-item prop="username">
           <label>邮箱</label>
-          <el-input
-            v-model="ruleForm.username"
-            type="text"
-            autocomplete="off"
-          />
+          <el-input v-model="ruleForm.username" type="text" autocomplete="off" />
         </el-form-item>
         <el-form-item prop="password">
           <label>密码</label>
-          <el-input
-            v-model="ruleForm.password"
-            type="password"
-            autocomplete="off"
-            minlength="6"
-            maxlength="15"
-          />
+          <el-input v-model="ruleForm.password" type="password" autocomplete="off" minlength="6" maxlength="15" />
         </el-form-item>
         <el-form-item prop="checkPsd" v-show="model === 'register'">
           <label>重复密码</label>
-          <el-input
-            v-model="ruleForm.checkPsd"
-            type="password"
-            minlength="6"
-            maxlength="15"
-          />
+          <el-input v-model="ruleForm.checkPsd" type="password" minlength="6" maxlength="15" />
         </el-form-item>
         <el-form-item>
-          <el-button
-            :disabled="btnbool"
-            type="primary"
-            class="login-btn block"
-            @click="submitForm(ruleFormRef)"
-            >{{ model === "login" ? "登录" : "注册" }}</el-button
-          >
+          <el-button :disabled="btnbool" type="primary" class="login-btn block" @click="submitForm(ruleFormRef)">{{
+              model === "login" ? "登录" : "注册"
+          }}</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -70,8 +41,10 @@ import apiUrl from "../../api/url.js";
 
 import useMd5 from '../../hook/index'
 
-import {useRouter} from 'vue-router'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 let router = useRouter()
+let store = useStore()
 
 const MenuData = reactive([
   { txt: "登录", current: true, type: "login" },
@@ -88,17 +61,17 @@ const ruleForm = reactive({
 
 let btnbool = ref(true);
 
-watch(ruleForm,(newval,oldval)=>{
-  if(model.value==="login"){
-    if(newval.username!==""&&newval.password!==""){
+watch(ruleForm, (newval, oldval) => {
+  if (model.value === "login") {
+    if (newval.username !== "" && newval.password !== "") {
       btnbool.value = false
-    }else{
+    } else {
       btnbool.value = true
     }
-  }else{
-    if(newval.username!==""&&newval.password!==""&&newval.checkPsd!==""){
+  } else {
+    if (newval.username !== "" && newval.password !== "" && newval.checkPsd !== "") {
       btnbool.value = false
-    }else{
+    } else {
       btnbool.value = true
     }
   }
@@ -167,14 +140,19 @@ const submitForm = (formEl: FormInstance | undefined) => {
     if (valid) {
       if (model.value === "login") {
         console.log("登录");
-        link(apiUrl.register,"GET",{},{name:ruleForm.username,psd:useMd5(ruleForm.password).value}).then((ok:any)=>{
+        link(`/register?name=${ruleForm.username}&psd=${useMd5(ruleForm.password).value}`, "get").then((ok: { data: any; }) => {
           // console.log(ok)
-          if(Object.keys(ok.data).length !== 0){
+          let { data } = ok;//解构出数据
+          // 判断data长度不为0登录成功
+          if (data.length != 0) {
             ElMessage.success("登录成功")
+            store.commit("UserModule/setUser", data[0]);
+            localStorage.setItem("muser", JSON.stringify(data[0]));
             router.push('/home')
-          }else{
+          } else {
             ElMessage.error("登录失败")
           }
+
         })
       } else {
         let data = {
@@ -198,7 +176,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
         });
       }
     } else {
-      
+
       return false;
     }
   });
@@ -218,15 +196,30 @@ body,
 #app {
   height: 100%;
 }
+
 .login {
-  background-color: rgb(14, 110, 200);
+  background-color: rgb(50, 77, 69);
   color: #fff;
   height: 100%;
+
+  .login-con {
+    h3 {
+      width: 200px;
+      text-align: center;
+      position: absolute;
+      left: 50%;
+      top: 20%;
+      font-size: 20px;
+      transform: translate(-50%, -50%);
+    }
+  }
 }
+
 .menu-tab {
   text-align: center;
+
   li {
-    margin-top: 160px;
+    margin-top: 250px;
     display: inline-block;
     width: 88px;
     line-height: 36px;
@@ -235,6 +228,7 @@ body,
     border-radius: 2px;
     cursor: pointer;
   }
+
   .current {
     background-color: rgba(255, 255, 255, 0.5);
   }
@@ -243,12 +237,14 @@ body,
 .demo-ruleForm {
   width: 20%;
   margin: 60px auto;
+
   label {
     display: block;
     margin-bottom: 5px;
     font-size: 14px;
     color: #fff;
   }
+
   .block {
     display: block;
     width: 60%;
@@ -256,8 +252,33 @@ body,
     margin-left: 50%;
     transform: translate(-50%);
   }
+
   .login-btn {
     margin-top: 20px;
+  }
+
+  .el-form-item {
+    .el-form-item__content {
+      .el-button {
+        background-color: #6cc490;
+        border-color: #75d1b4;
+      }
+
+      .el-button:focus,
+      .el-button:hover {
+        background-color: #60ae80;
+        border-color: #63b199;
+      }
+
+      .el-button.is-disabled,
+      .el-button.is-disabled:focus,
+      .el-button.is-disabled:hover {
+        background-color: #88cca4;
+        border-color: #b0e9d7;
+      }
+    }
+
+
   }
 }
 </style>

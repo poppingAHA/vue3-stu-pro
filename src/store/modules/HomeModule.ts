@@ -4,8 +4,9 @@ let HomeModule:Object={
     state:{
         navBool:true,
         dialogFormVisible:false,
+        deleteDialogVisible:false,
         uplistData:{},
-
+        deleteData:{},
         listdata:[]
     },
     mutations:{
@@ -16,9 +17,16 @@ let HomeModule:Object={
             state.dialogFormVisible=!state.dialogFormVisible
             state.uplistData=payload
         },
+        SET_DELETEDIALOG(state:any,payload:any){
+            state.deleteDialogVisible = !state.deleteDialogVisible;
+            state.deleteData=payload;
+        },
         DIALOG(state:any){
-            state.dialogFormVisible=!state.dialogFormVisible,
-            window.location.reload()
+            state.dialogFormVisible=!state.dialogFormVisible
+            // window.location.reload()
+        },
+        DELETEDIALOG(state:any){
+            state.deleteDialogVisible = !state.deleteDialogVisible;
         },
         LISTDATA(state:any,payload:any){
             state.listdata=payload
@@ -35,7 +43,7 @@ let HomeModule:Object={
         DEL_DATA(context:any,payload:any){
             link(apiUrl.userlist+"/"+payload.id,"delete").then((ok: any) => {
                 console.log(ok)
-                window.location.reload()
+                // window.location.reload()
             });
         }
     },

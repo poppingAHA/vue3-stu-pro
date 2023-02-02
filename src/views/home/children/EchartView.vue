@@ -8,14 +8,14 @@
       </Ip>
       <Ip>
         <template #main>
-          <ChartTwo/>
+          <ChartThree/>
         </template>
       </Ip>
     </div>
     <div class="itemright">
       <Ip>
         <template #main>
-          <ChartThree/>
+          <ChartTwo/>
         </template>
       </Ip>
       <Ip>

@@ -26,12 +26,12 @@ html,body,#app,.common-layout,.el-aside,.el-container{
   height: 100%;
 }
 .el-aside{
-  background-color: #545c64;
+  background-color: rgb(50, 77, 69);
 }
 .el-header{
-  /* background-color: aqua; */
+  background-color: rgb(54, 99, 84);
 }
 .el-main{
-  background-color: gainsboro;
+  background-color: rgb(189, 207, 202);
 }
 </style>
